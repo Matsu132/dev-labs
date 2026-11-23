@@ -13,11 +13,14 @@ References:
 
 ## Install and test
 
-Requires Node.js 22+.
+Use Node.js 22.13 or later in the 22.x line, or Node.js 24+ for the development checks.
 
 ```sh
-npm install
+npm ci
+npm run lint
+npm run typecheck
 npm test
+npm audit
 npm run lint:example
 ```
 
@@ -37,4 +40,4 @@ MCPの `tools/list` などのJSONスナップショットを静的検査する�
 
 ## Security and license
 
-No credentials, network calls, or tool execution. Review JSON snapshots before sharing; they may contain sensitive descriptions. MIT licensed. Development dependencies are TypeScript (MIT); CI installs dependencies from npm. No npm package published.
+No credentials, network calls, or tool execution. Review JSON snapshots before sharing; they may contain sensitive descriptions. MIT licensed. CI installs locked development dependencies from npm. No npm package published.
