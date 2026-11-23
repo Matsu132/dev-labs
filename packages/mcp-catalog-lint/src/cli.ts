@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// Runtime file loading uses Node.js; typed without @types/node for zero-dependency builds.
 import {readFile} from 'node:fs/promises';
 import {lintCatalog} from './lint.js';
 const file=process.argv[2];

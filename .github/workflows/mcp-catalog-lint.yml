@@ -4,10 +4,14 @@ on:
   push:
     paths:
       - 'packages/mcp-catalog-lint/**'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/mcp-catalog-lint.yml'
   pull_request:
     paths:
       - 'packages/mcp-catalog-lint/**'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/mcp-catalog-lint.yml'
 
 permissions:
@@ -17,9 +21,6 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: packages/mcp-catalog-lint
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -28,16 +29,17 @@ jobs:
         with:
           node-version: '22'
       - name: Install locked dependencies
-        run: npm ci --no-audit
+        run: npm ci --no-audit --ignore-scripts
       - name: ESLint
-        run: npm run lint
+        run: npm run lint --workspace=mcp-catalog-lint
       - name: TypeScript type check
-        run: npm run typecheck
+        run: npm run typecheck --workspace=mcp-catalog-lint
       - name: Build
-        run: npm run build
+        run: npm run build --workspace=mcp-catalog-lint
       - name: Unit tests
-        run: npm run test:unit
+        run: npm run test:unit --workspace=mcp-catalog-lint
       - name: CLI smoke test
+        working-directory: packages/mcp-catalog-lint
         run: node dist/cli.js examples/catalog.json
       - name: npm audit
         run: npm audit

@@ -1,0 +1,22 @@
+{
+  "name": "matsu132-dev-labs",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/mcp-catalog-lint"
+  ],
+  "bin": {
+    "mcp-catalog-lint": "packages/mcp-catalog-lint/dist/mcp.js"
+  },
+  "files": [
+    "packages/mcp-catalog-lint/dist"
+  ],
+  "scripts": {
+    "prepare": "npm run build --workspace=mcp-catalog-lint"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "type": "module"
+}
