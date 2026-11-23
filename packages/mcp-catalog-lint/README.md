@@ -24,6 +24,8 @@ npm audit
 npm run lint:example --workspace=mcp-catalog-lint
 ```
 
+The workspace uses TypeScript 7 for builds and type checks. The root TypeScript 5 dependency satisfies the current `typescript-eslint` peer requirement for linting. CI runs the compiled tool on Node.js 22.
+
 ## Codex
 
 Install Git and Node.js 22.13+ (22.x) or 24+. Run this once to register the stdio server:
