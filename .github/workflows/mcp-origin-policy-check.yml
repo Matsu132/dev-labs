@@ -1,0 +1,28 @@
+name: mcp-origin-policy-check
+on:
+  push:
+    paths:
+      - 'packages/mcp-origin-policy-check/**'
+      - '.github/workflows/mcp-origin-policy-check.yml'
+  pull_request:
+    paths:
+      - 'packages/mcp-origin-policy-check/**'
+      - '.github/workflows/mcp-origin-policy-check.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/mcp-origin-policy-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm audit --audit-level=high
+      - run: node examples/check.mjs
