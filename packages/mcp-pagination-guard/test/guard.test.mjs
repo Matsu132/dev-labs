@@ -1,0 +1,10 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {collectCatalog} from '../dist/index.js';
+const id=x=>x.name;
+test('collects pages including empty intermediate page and opaque empty cursor',async()=>{const seen=[];const result=await collectCatalog(async c=>{seen.push(c);return c===undefined?{items:[{name:'a'}],nextCursor:''}:c===''?{items:[],nextCursor:'b'}:{items:[{name:'b'}]};},id);assert.deepEqual(result.map(id),['a','b']);assert.deepEqual(seen,[undefined,'','b']);});
+test('rejects repeated cursor',async()=>assert.rejects(collectCatalog(async()=>({items:[],nextCursor:'x'}),id),{code:'CURSOR_CYCLE'}));
+test('rejects duplicate identity',async()=>assert.rejects(collectCatalog(async()=>({items:[{name:'a'},{name:'a'}]}),id),{code:'DUPLICATE_ID'}));
+test('page budget',async()=>assert.rejects(collectCatalog(async()=>({items:[],nextCursor:'x'}),id,{maxPages:1}),{code:'PAGE_LIMIT'}));
+test('item budget',async()=>assert.rejects(collectCatalog(async()=>({items:[{name:'a'},{name:'b'}]}),id,{maxItems:1}),{code:'ITEM_LIMIT'}));
+test('invalid page',async()=>assert.rejects(collectCatalog(async()=>({items:[],nextCursor:42}),id),{code:'INVALID_PAGE'}));
+test('upstream failure propagates without partial return',async()=>assert.rejects(collectCatalog(async c=>{if(c)throw Error('upstream');return {items:[{name:'a'}],nextCursor:'x'};},id),/upstream/));
+test('invalid limits',async()=>assert.rejects(collectCatalog(async()=>({items:[]}),id,{maxPages:0}),RangeError));
