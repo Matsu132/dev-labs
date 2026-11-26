@@ -10,7 +10,7 @@ References: [MCP pagination](https://modelcontextprotocol.io/specification/2025-
 
 ## Build
 
-Node 22+, from this directory:
+Node.js 26+, from this directory:
 
 ```sh
 npm install --ignore-scripts

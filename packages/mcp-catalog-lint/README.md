@@ -13,7 +13,7 @@ References:
 
 ## Install and test
 
-Use Node.js 22.13 or later in the 22.x line, or Node.js 24+. Run these commands from the repository root.
+Use Node.js 26 or later. Run these commands from the repository root.
 
 ```sh
 npm ci
@@ -24,11 +24,11 @@ npm audit
 npm run lint:example --workspace=mcp-catalog-lint
 ```
 
-The workspace uses TypeScript 7 for builds and type checks. The root TypeScript 5 dependency satisfies the current `typescript-eslint` peer requirement for linting. CI runs the compiled tool on Node.js 22.
+The workspace uses TypeScript 7 for builds and type checks. The root TypeScript 5 dependency satisfies the current `typescript-eslint` peer requirement for linting. CI runs the compiled tool on Node.js 26.
 
 ## Codex
 
-Install Git and Node.js 22.13+ (22.x) or 24+. Run this once to register the stdio server:
+Install Git and Node.js 26+. Run this once to register the stdio server:
 
 ```sh
 codex mcp add mcp-catalog-lint -- npm exec --yes --package=git+https://github.com/Matsu132/dev-labs.git#main -- mcp-catalog-lint
