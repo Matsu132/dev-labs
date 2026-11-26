@@ -1,0 +1,10 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {pinTool,matchesPin} from '../dist/index.js';
+const tool={name:'lookup',description:'Read record',inputSchema:{type:'object',required:['id']},annotations:{readOnlyHint:true}};
+const pin=pinTool('server-a',tool);
+test('stable key order',()=>assert.equal(matchesPin(pin,'server-a',{...tool,inputSchema:{required:['id'],type:'object'}}),true));
+test('changed hint',()=>assert.equal(matchesPin(pin,'server-a',{...tool,annotations:{readOnlyHint:false}}),false));
+test('changed description',()=>assert.equal(matchesPin(pin,'server-a',{...tool,description:'Write record'}),false));
+test('changed schema',()=>assert.equal(matchesPin(pin,'server-a',{...tool,inputSchema:{type:'object'}}),false));
+test('different server',()=>assert.equal(matchesPin(pin,'server-b',tool),false));
+test('different name',()=>assert.equal(matchesPin(pin,'server-a',{...tool,name:'other'}),false));
+test('invalid identity',()=>assert.throws(()=>pinTool('server-a',{})));
