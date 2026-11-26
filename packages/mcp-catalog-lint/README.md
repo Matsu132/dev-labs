@@ -24,7 +24,7 @@ npm audit
 npm run lint:example --workspace=mcp-catalog-lint
 ```
 
-The workspace uses TypeScript 7 for builds and type checks. The root TypeScript 5 dependency satisfies the current `typescript-eslint` peer requirement for linting. CI runs the compiled tool on Node.js 26.
+The workspace uses TypeScript 7 for builds and type checks. The root TypeScript 6 dependency satisfies the current `typescript-eslint` peer requirement for linting. CI runs the compiled tool on Node.js 26.
 
 ## Codex
 
