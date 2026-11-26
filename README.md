@@ -10,7 +10,7 @@ Packages have their own scripts and tests and share a root npm workspace lockfil
 
 ## Use from Codex
 
-With Git and Node.js 22.13+ (22.x) or 24+ installed, register the MCP server directly from GitHub:
+With Git and Node.js 26+ installed, register the MCP server directly from GitHub:
 
 ```sh
 codex mcp add mcp-catalog-lint -- npm exec --yes --package=git+https://github.com/Matsu132/dev-labs.git#main -- mcp-catalog-lint

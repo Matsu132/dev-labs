@@ -4,7 +4,7 @@ Offline TypeScript developer utility for reviewing a proposed Remote MCP Host/Or
 
 ## Usage
 
-Node.js 22+:
+Node.js 26+:
 
 ```sh
 npm install
