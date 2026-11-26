@@ -6,3 +6,39 @@ test('root tsconfig path alias',async t=>{const g=await buildGraph(await fixture
 test('ignores generated directories and symlinks',async t=>{const root=await fixture(t,{'a.ts':"import './missing'; import 'external';",'node_modules/x/index.ts':'','dist/a.ts':'','.git/x.ts':''});await symlink(path.join(root,'a.ts'),path.join(root,'linked.ts'));const g=await buildGraph(root);assert.equal(g.nodes.length,1);assert.deepEqual(g.unresolved,[{from:'a.ts',specifier:'./missing'}]);});
 test('HTML escapes script terminators and contains local UI',()=>{const html=renderHtml({nodes:[{id:'</script><img src=x onerror=alert(1)>',symbols:[]}],edges:[],cycles:[],unresolved:[]});assert.ok(!html.includes('</script><img'));assert.match(html,/Codegraph Viewer/);assert.match(html,/Content-Security-Policy/);assert.match(html,/Export JSON/);});
 test('empty graph',async t=>{const g=await buildGraph(await fixture(t,{}));assert.deepEqual(g,{nodes:[],edges:[],cycles:[],unresolved:[]});});
+
+test('local package metadata resolves directory require to scanned source only',async t=>{
+ const root=await fixture(t,{
+  'a.cjs':"require('./lib'); require('./ignored');",
+  'lib/package.json':'{"main":"entry.js"}',
+  'lib/entry.js':'module.exports = 1;',
+  'ignored/package.json':'{"main":"dist/entry.js"}',
+  'ignored/other.js':'',
+  'ignored/dist/entry.js':'module.exports = 2;',
+ });
+ const g=await buildGraph(root);
+ assert.deepEqual(g.edges,[{from:'a.cjs',to:'lib/entry.js',kind:'require',typeOnly:false}]);
+ assert.deepEqual(g.unresolved,[{from:'a.cjs',specifier:'./ignored'}]);
+});
+
+test('dynamic import options keep resolved and unresolved literals',async t=>{
+ const root=await fixture(t,{
+  'a.ts':"import('./b.js', {}); import('./missing.js', {}); import(name, {}); require('./b.js', {});",
+  'b.ts':"import './a';",
+ });
+ const g=await buildGraph(root);
+ assert.deepEqual(g.edges.filter(e=>e.from==='a.ts'),[{from:'a.ts',to:'b.ts',kind:'dynamic',typeOnly:false}]);
+ assert.deepEqual(g.unresolved,[{from:'a.ts',specifier:'./missing.js'}]);
+ assert.deepEqual(g.cycles,[['a.ts','b.ts']]);
+});
+
+test('import type expressions add type-only dependencies without runtime cycles',async t=>{
+ const root=await fixture(t,{
+  'a.ts':"export type X = import('./b').X; export type Y = typeof import('./missing');",
+  'b.ts':"import './a'; export type X = string;",
+ });
+ const g=await buildGraph(root);
+ assert.deepEqual(g.edges.filter(e=>e.from==='a.ts'),[{from:'a.ts',to:'b.ts',kind:'import',typeOnly:true}]);
+ assert.deepEqual(g.unresolved,[{from:'a.ts',specifier:'./missing'}]);
+ assert.deepEqual(g.cycles,[]);
+});
