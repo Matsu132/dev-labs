@@ -1,0 +1,25 @@
+name: MCP Tool Pin
+on:
+  push:
+    paths: ['packages/mcp-tool-pin/**', '.github/workflows/mcp-tool-pin.yml']
+  pull_request:
+    paths: ['packages/mcp-tool-pin/**', '.github/workflows/mcp-tool-pin.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/mcp-tool-pin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm audit --audit-level=high
