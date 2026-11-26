@@ -1,7 +1,8 @@
 import ts from 'typescript';
 import {readdir,readFile,realpath,stat} from 'node:fs/promises';
 import path from 'node:path';
-export type GraphNode={id:string;symbols:string[]};
+export type SymbolLocation={name:string;kind:string;line:number;endLine:number};
+export type GraphNode={id:string;symbols:string[];locations?:SymbolLocation[]};
 export type GraphEdge={from:string;to:string;kind:'import'|'export'|'dynamic'|'require';typeOnly:boolean};
 export type CodeGraph={nodes:GraphNode[];edges:GraphEdge[];cycles:string[][];unresolved:{from:string;specifier:string}[]};
 const excluded=new Set(['node_modules','.git','.next','dist','build','coverage','out','.turbo','.cache']);
@@ -33,7 +34,8 @@ export async function buildGraph(directory:string):Promise<CodeGraph>{
  const nodes:GraphNode[]=[];const edges:GraphEdge[]=[];const unresolved:CodeGraph['unresolved']=[];const seen=new Set<string>();const missing=new Set<string>();
  for(const [full,content] of files){
   const ast=ts.createSourceFile(full,content,ts.ScriptTarget.Latest,true);
-  const symbols=new Set<string>();
+  const symbols=new Set<string>();const locations:SymbolLocation[]=[];
+  function locate(name:string,n:ts.Node){symbols.add(name);if(locations.length<2000)locations.push({name,kind:ts.SyntaxKind[n.kind],line:ast.getLineAndCharacterOfPosition(n.getStart(ast)).line+1,endLine:ast.getLineAndCharacterOfPosition(n.end).line+1});}
   function add(spec:string,kind:GraphEdge['kind'],typeOnly=false){
    const resolved=ts.resolveModuleName(spec,full,options,host).resolvedModule?.resolvedFileName;
    if(!resolved||!files.has(path.resolve(resolved))){if(spec.startsWith('.')||spec.startsWith('/')||options.paths&&Object.keys(options.paths).some(k=>k.includes('*')?spec.startsWith(k.split('*')[0]):k===spec)){const key=JSON.stringify([id(full),spec]);if(!missing.has(key)){missing.add(key);unresolved.push({from:id(full),specifier:spec});}}return;}
@@ -41,8 +43,8 @@ export async function buildGraph(directory:string):Promise<CodeGraph>{
    if(!seen.has(key)){if(edges.length>=10000)throw Error('Edge limit exceeded');seen.add(key);edges.push(edge);}
   }
   function visit(n:ts.Node){
-   if((ts.isFunctionDeclaration(n)||ts.isClassDeclaration(n)||ts.isInterfaceDeclaration(n)||ts.isTypeAliasDeclaration(n)||ts.isEnumDeclaration(n))&&n.name)symbols.add(n.name.text);
-   if(ts.isVariableDeclaration(n)&&ts.isIdentifier(n.name)&&n.initializer&&(ts.isArrowFunction(n.initializer)||ts.isFunctionExpression(n.initializer)))symbols.add(n.name.text);
+   if((ts.isFunctionDeclaration(n)||ts.isClassDeclaration(n)||ts.isInterfaceDeclaration(n)||ts.isTypeAliasDeclaration(n)||ts.isEnumDeclaration(n))&&n.name)locate(n.name.text,n);
+   if(ts.isVariableDeclaration(n)&&ts.isIdentifier(n.name)&&n.initializer&&(ts.isArrowFunction(n.initializer)||ts.isFunctionExpression(n.initializer)))locate(n.name.text,n);
    if(ts.isImportDeclaration(n)&&ts.isStringLiteralLike(n.moduleSpecifier)){const clause=n.importClause;const named=clause?.namedBindings;add(n.moduleSpecifier.text,'import',!!clause&&(clause.isTypeOnly||(!clause.name&&!!named&&ts.isNamedImports(named)&&named.elements.length>0&&named.elements.every(x=>x.isTypeOnly))));}
    if(ts.isExportDeclaration(n)&&n.moduleSpecifier&&ts.isStringLiteralLike(n.moduleSpecifier))add(n.moduleSpecifier.text,'export',n.isTypeOnly||!!(n.exportClause&&ts.isNamedExports(n.exportClause)&&n.exportClause.elements.length>0&&n.exportClause.elements.every(x=>x.isTypeOnly)));
    if(ts.isImportEqualsDeclaration(n)&&ts.isExternalModuleReference(n.moduleReference)&&n.moduleReference.expression&&ts.isStringLiteralLike(n.moduleReference.expression))add(n.moduleReference.expression.text,'require',n.isTypeOnly);
@@ -52,7 +54,7 @@ export async function buildGraph(directory:string):Promise<CodeGraph>{
    }
    ts.forEachChild(n,visit);
   }
-  visit(ast);nodes.push({id:id(full),symbols:[...symbols].sort()});
+  visit(ast);nodes.push({id:id(full),symbols:[...symbols].sort(),locations});
  }
  nodes.sort((a,b)=>a.id.localeCompare(b.id));edges.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
  return {nodes,edges,cycles:findCycles(nodes.map(n=>n.id),edges.filter(e=>!e.typeOnly)),unresolved};
