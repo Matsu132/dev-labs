@@ -1,0 +1,32 @@
+{
+  "name": "codegraph-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "graph": "node dist/cli.js",
+    "mcp": "node dist/mcp.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0"
+  },
+  "bin": {
+    "codegraph-viewer": "dist/cli.js",
+    "codegraph-mcp": "dist/mcp.js"
+  },
+  "dependencies": {
+    "typescript": "^5.9.3",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  }
+}
