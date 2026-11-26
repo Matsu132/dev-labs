@@ -5,6 +5,7 @@ A collection of independent TypeScript MCP and developer-tool OSS projects.
 ## Packages
 
 - [mcp-catalog-lint](packages/mcp-catalog-lint/README.md) — offline MCP catalog snapshot linter.
+- [codegraph-viewer](packages/codegraph-viewer/README.md) — offline interactive TypeScript/JavaScript file dependency graph.
 
 Packages have their own scripts and tests and share a root npm workspace lockfile. No npm publication is performed automatically.
 

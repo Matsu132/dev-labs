@@ -1,0 +1,32 @@
+# Codegraph Viewer
+
+Offline TypeScript/JavaScript source dependency visualization. Generate one standalone interactive HTML file or JSON from a local source tree. No server, API key, cloud account, or paid dependency is required. Source files are parsed with the TypeScript compiler API, never executed.
+
+## Quick start
+
+Node.js 22+.
+
+```sh
+cd packages/codegraph-viewer
+npm install --ignore-scripts
+npm run build
+npm run graph -- ../.. codegraph.html
+```
+
+Open the generated HTML in a browser. Search file names or declared symbols; select a node to inspect incoming/outgoing dependencies; filter runtime dependency cycles or type-only imports; adjust zoom; export JSON. For machine-readable output pass a path ending in .json. Existing output files are not overwritten.
+
+## Scope and limits
+
+File-level graph: literal imports, re-exports, dynamic imports, require and import-equals; TS/TSX/JS/JSX/MTS/CTS/MJS/CJS. Root tsconfig compilerOptions (including paths) are read without evaluating plugins or following extends. Relative and configured path alias resolution is restricted to scanned files; external packages are omitted. The graph is static, not a runtime call graph. Named declarations and function-valued variables are listed as symbols, not represented as call edges. Cycles are strongly connected components excluding type-only edges; dynamic imports may never execute. CommonJS require detection is syntactic. Monorepo nested configs, project references, nonliteral imports, generated code and symlinks are not followed. Maximum 500 source files, 20 MiB total, 1 MiB/file, 10,000 edges. Unresolved local imports are displayed. Graph reports include source paths and symbol names; do not publish private reports inadvertently.
+
+## 日本語
+
+TypeScript/JavaScriptのファイル間依存関係をブラウザで可視化します。上記コマンドでHTMLを生成して開くだけで、検索、依存元・依存先の確認、循環依存の抽出、ズーム、JSON出力が可能です。外部サービス不要。関数単位の呼び出しグラフではなく静的ファイル依存グラフです。
+
+## References
+
+- https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API
+- https://github.com/actions/checkout
+- https://github.com/actions/setup-node
+
+MIT; TypeScript runtime dependency is Apache-2.0. Development dependencies follow the existing dev-labs conventions.
