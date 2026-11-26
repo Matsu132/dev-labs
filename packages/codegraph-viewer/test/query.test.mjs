@@ -7,3 +7,12 @@ test('type-only edges excluded by default',()=>{const q=new GraphQuery(g);assert
 test('unknown paths rejected and limits enforced',()=>{const q=new GraphQuery(g);assert.throws(()=>q.inspect('../secret'));assert.throws(()=>q.neighborhood(['a.ts'],'both',5));assert.throws(()=>q.search('x',41));});
 test('overview and inspect return deterministic summaries',()=>{const q=new GraphQuery(g);assert.equal(q.overview().files,4);assert.equal(q.inspect('a.ts').dependencies.total,2);});
 test('response budget uses bytes',()=>{assert.equal(resultEnvelope({x:'あ'.repeat(100)},100).isError,true);assert.deepEqual(resultEnvelope({x:1}).structuredContent,{x:1});});
+
+test('context traces a deterministic shortest path from the seed',()=>{
+ const result=new GraphQuery(g).neighborhood(['c.ts'],'dependents');
+ assert.deepEqual(result.files.map(({file,distance,via})=>({file,distance,via})),[
+  {file:'c.ts',distance:0,via:null},
+  {file:'b.ts',distance:1,via:'c.ts'},
+  {file:'a.ts',distance:2,via:'b.ts'},
+ ]);
+});

@@ -13,7 +13,7 @@ npm run build
 npm run graph -- ../.. codegraph.html
 ```
 
-Open the generated HTML in a browser. Search file names or declared symbols; select a node to inspect incoming/outgoing dependencies; filter runtime dependency cycles or type-only imports; adjust zoom; export JSON. For machine-readable output pass a path ending in .json. Existing output files are not overwritten.
+Open the generated HTML in a browser. Search file names or declared symbols; select a node to inspect incoming/outgoing dependencies, declaration lines, and unresolved imports; enable **Selected file and neighbors** to narrow the graph to its direct connections; filter runtime dependency cycles or type-only imports; adjust zoom; export JSON. For machine-readable output pass a path ending in .json. Existing output files are not overwritten.
 
 ## Scope and limits
 
@@ -64,7 +64,7 @@ Claude Desktop / compatible stdio client configuration:
 | graph_overview | Compact architecture map and hubs |
 | graph_search | Ranked file/symbol search, declaration line ranges, pagination |
 | graph_inspect | Direct incoming/outgoing edges, declarations, unresolved imports |
-| graph_context | Multi-hop dependencies/dependents and change impact |
+| graph_context | Multi-hop dependencies/dependents and change impact, with a preceding file (`via`) for tracing the shortest path from a seed |
 | graph_diagnostics | Cycle groups and missing local imports |
 | graph_refresh | Explicit snapshot rebuild after edits |
 
