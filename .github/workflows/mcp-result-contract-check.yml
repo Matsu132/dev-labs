@@ -1,0 +1,27 @@
+name: MCP Result Contract Check
+on:
+  pull_request:
+    paths: ['packages/mcp-result-contract-check/**', '.github/workflows/mcp-result-contract-check.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/mcp-result-contract-check
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm install --ignore-scripts --workspaces=false
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run check -- examples/schema.json examples/result.json
+      - run: npm audit --audit-level=high
