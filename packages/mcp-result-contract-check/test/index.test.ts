@@ -10,3 +10,9 @@ test('null structured result',()=>assert.deepEqual(checkResult({type:'null'},{co
 test('invalid result',()=>assert.equal(checkResult(schema,null)[0].code,'INVALID_RESULT'));
 test('fallback mismatch',()=>assert.equal(checkResult(undefined,{content:[],structuredContent:{}})[0].severity,'warning'));
 test('invalid schema',()=>assert.ok(checkResult({type:'invalid'},{content:[],structuredContent:{}}).some(f=>f.code==='INVALID_OR_UNSUPPORTED_SCHEMA')));
+test('async schema rejects both matching and mismatching results',()=> {
+  for (const ok of [true, 1]) {
+    const findings = checkResult({...schema,$async:true},{content:[{type:'text',text:JSON.stringify({ok})}],structuredContent:{ok}});
+    assert.deepEqual(findings,[{severity:'error',code:'INVALID_OR_UNSUPPORTED_SCHEMA'}]);
+  }
+});
