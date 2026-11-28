@@ -13,6 +13,7 @@ export function checkResult(schema: unknown, result: unknown): Finding[] {
     try {
       if (!record(schema) && typeof schema !== 'boolean') throw new Error('Invalid schema');
       const validate = new Ajv2020({allErrors:true,strict:true}).compile(schema);
+      if ('$async' in validate && validate.$async === true) throw new Error('Async schemas are not supported');
       if (present && !validate(result.structuredContent)) for (const e of validate.errors ?? []) findings.push({severity:'error',code:'SCHEMA_'+e.keyword,path:e.instancePath});
     } catch { findings.push({severity:'error',code:'INVALID_OR_UNSUPPORTED_SCHEMA'}); }
   }
