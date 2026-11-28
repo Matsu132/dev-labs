@@ -1,6 +1,6 @@
 # MCP Result Contract Check
 
-Offline developer CLI and TypeScript library for checking recorded MCP tool results against JSON Schema 2020-12. No network calls or tool execution. Successful results are schema-checked; tool errors skip the success schema. Missing matching JSON text fallback is a warning, not a failure. This is not a full MCP envelope validator; remote references and unsupported schema keywords fail closed. Use trusted schemas and bounded fixtures.
+Offline developer CLI and TypeScript library for checking recorded MCP tool results against JSON Schema 2020-12. No network calls or tool execution. Successful results are schema-checked; tool errors skip the success schema. Missing matching JSON text fallback is a warning, not a failure. This is not a full MCP envelope validator; asynchronous schemas, remote references and unsupported schema keywords fail closed. Use trusted schemas and bounded fixtures.
 
 ## Quick start / 日本語導入
 
