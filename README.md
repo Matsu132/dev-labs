@@ -4,6 +4,8 @@ A collection of independent TypeScript MCP and developer-tool OSS projects.
 
 ## Packages
 
+- [mcp-result-contract-check](packages/mcp-result-contract-check/README.md) — offline MCP result contract checker.
+
 - [mcp-catalog-lint](packages/mcp-catalog-lint/README.md) — offline MCP catalog snapshot linter.
 - [codegraph-viewer](packages/codegraph-viewer/README.md) — offline interactive TypeScript/JavaScript file dependency graph.
 
